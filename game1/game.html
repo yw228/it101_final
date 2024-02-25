@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">  
+    <title>Memory Card Game</title>
+    <style>
+        /* Import Google Font - Poppins */
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .restart-button {
+            padding: 10px 20px;
+            margin-left: 10px; /* Space it out from the back button */
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #f2f2f2;
+            border: 1px solid #dcdcdc;
+            border-radius: 5px;
+        }
+
+        .header-controls {
+            display: flex;
+            justify-content: space-between; /* Adjust this based on your layout preference */
+            align-items: center; /* Vertically aligns the items in the center */
+            margin-bottom: 20px; /* Adds some space below the controls */
+        }
+
+        .restart-button:hover {
+            background-color: #e2e2e2;
+        }
+
+        .score-board {
+            /* Additional styling for your score-board */
+            padding: 10px;
+            border-radius: 5px;
+            /* Center text inside the score-board */
+            text-align: center;
+        }
+
+        .timer-board {
+            /* Additional styling for your score-board */
+            padding: 10px;
+            border-radius: 5px;
+            /* Center text inside the score-board */
+            text-align: center;
+        }
+
+
+        body{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: #6563FF;
+        }
+        .wrapper{
+            padding: 25px;
+            border-radius: 10px;
+            background: #F8F8F8;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .cards, .card, .view{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .cards{
+            height: 400px;
+            width: 400px;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+        .cards .card{
+            cursor: pointer;
+            list-style: none;
+            user-select: none;
+            position: relative;
+            perspective: 1000px;
+            transform-style: preserve-3d;
+            height: calc(100% / 4 - 10px);
+            width: calc(100% / 4 - 10px);
+        }
+        .card.shake{
+            animation: shake 0.35s ease-in-out;
+        }
+        @keyframes shake {
+            0%, 100%{
+                transform: translateX(0);
+            }
+            20%{
+                transform: translateX(-13px);
+            }
+            40%{
+                transform: translateX(13px);
+            }
+            60%{
+                transform: translateX(-8px);
+            }
+            80%{
+                transform: translateX(8px);
+            }
+        }
+        .card .view{
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            border-radius: 7px;
+            background: #fff;
+            pointer-events: none;
+            backface-visibility: hidden;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            transition: transform 0.25s linear;
+        }
+        .card .front-view img{
+            width: 19px;
+        }
+        .card .back-view img{
+            max-width: 45px;
+        }
+        .card .back-view{
+            transform: rotateY(-180deg);
+        }
+        .card.flip .back-view{
+            transform: rotateY(0);
+        }
+        .card.flip .front-view{
+            transform: rotateY(180deg);
+        }
+
+        .back-button, .restart-button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #f2f2f2;
+            border: 1px solid #dcdcdc;
+            border-radius: 5px;
+            text-decoration: none; /* Removes underline from the link */
+            color: black; /* Sets text color for the link */
+        }
+
+        .back-button:hover, .restart-button:hover {
+            background-color: #e2e2e2;
+        }
+
+
+        @media screen and (max-width: 700px) {
+            .cards{
+                height: 350px;
+                width: 350px;
+            }
+            .card .front-view img{
+                width: 17px;
+            }
+            .card .back-view img{
+                max-width: 40px;
+            }
+        }
+
+        @media screen and (max-width: 530px) {
+            .cards{
+                height: 300px;
+                width: 300px;
+            }
+            .card .front-view img{
+                width: 15px;
+            }
+            .card .back-view img{
+                max-width: 35px;
+            }
+        }
+
+        .leaderboard-button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #f2f2f2;
+            border: 1px solid #dcdcdc;
+            border-radius: 5px;
+        }
+
+        .leaderboard-button:hover {
+            background-color: #e2e2e2;
+        }
+
+        .leaderboard-section {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 10px;
+            background: #F8F8F8;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .hidden {
+            display: none;
+        }
+
+        #playerNameDisplay {
+            margin-right: 20px; /* Example styling */
+        }
+
+
+
+    </style>
+  </head>
+  <body>
+    <div class="wrapper">
+        <div class="header-controls">
+        <a href="index.html" class="back-button">Back to Main Page</a>
+        <button id="restartButton" class="restart-button">Restart Game</button>
+        </div>
+        <div class="score-board">
+            <span id="playerNameDisplay">Player: </span>
+            <span>Score: </span><span id="score">0</span>
+        </div>
+            <div class="timer-board">
+            <span>Time: </span><span id="timer">00:00</span>
+            </div>
+      <ul class="cards">
+        <li class="card">
+          <div class="view front-view">
+            <img src="images/que_icon.svg" alt="icon">
+          </div>
+          <div class="view back-view">
+            <img src="images/img-1.png" alt="card-img">
+          </div>
+        </li>
+        <li class="card">
+          <div class="view front-view">
+            <img src="images/que_icon.svg" alt="icon">
+          </div>
+          <div class="view back-view">
+            <img src="images/img-6.png" alt="card-img">
+          </div>
+        </li>
+        <li class="card">
+          <div class="view front-view">
+            <img src="images/que_icon.svg" alt="icon">
+          </div>
+          <div class="view back-view">
+            <img src="images/img-3.png" alt="card-img">
+          </div>
+        </li>
+        <li class="card">
+          <div class="view front-view">
+            <img src="images/que_icon.svg" alt="icon">
+          </div>
+          <div class="view back-view">
+            <img src="images/img-2.png" alt="card-img">
+          </div>
+        </li>
+        <li class="card">
+          <div class="view front-view">
+            <img src="images/que_icon.svg" alt="icon">
+          </div>
+          <div class="view back-view">
+            <img src="images/img-1.png" alt="card-img">
+          </div>
+        </li>
+        <li class="card">
+          <div class="view front-view">
+            <img src="images/que_icon.svg" alt="icon">
+          </div>
+          <div class="view back-view">
+            <img src="images/img-5.png" alt="card-img">
+          </div>
+        </li>
+        <li class="card">
+          <div class="view front-view">
+            <img src="images/que_icon.svg" alt="icon">
+          </div>
+          <div class="view back-view">
+            <img src="images/img-2.png" alt="card-img">
+          </div>
+        </li>
+        <li class="card">
+          <div class="view front-view">
+            <img src="images/que_icon.svg" alt="icon">
+          </div>
+          <div class="view back-view">
+            <img src="images/img-6.png" alt="card-img">
+          </div>
+        </li>
+        <li class="card">
+          <div class="view front-view">
+            <img src="images/que_icon.svg" alt="icon">
+          </div>
+          <div class="view back-view">
+            <img src="images/img-3.png" alt="card-img">
+          </div>
+        </li>
+        <li class="card">
+          <div class="view front-view">
+            <img src="images/que_icon.svg" alt="icon">
+          </div>
+          <div class="view back-view">
+            <img src="images/img-4.png" alt="card-img">
+          </div>
+        </li>
+        <li class="card">
+          <div class="view front-view">
+            <img src="images/que_icon.svg" alt="icon">
+          </div>
+          <div class="view back-view">
+            <img src="images/img-5.png" alt="card-img">
+          </div>
+        </li>
+        <li class="card">
+          <div class="view front-view">
+            <img src="images/que_icon.svg" alt="icon">
+          </div>
+          <div class="view back-view">
+            <img src="images/img-4.png" alt="card-img">
+          </div>
+        </li>
+        <li class="card">
+          <div class="view front-view">
+            <img src="images/que_icon.svg" alt="icon">
+          </div>
+          <div class="view back-view">
+            <img src="images/img-4.png" alt="card-img">
+          </div>
+        </li>
+        <li class="card">
+          <div class="view front-view">
+            <img src="images/que_icon.svg" alt="icon">
+          </div>
+          <div class="view back-view">
+            <img src="images/img-4.png" alt="card-img">
+          </div>
+        </li>
+        <li class="card">
+          <div class="view front-view">
+            <img src="images/que_icon.svg" alt="icon">
+          </div>
+          <div class="view back-view">
+            <img src="images/img-4.png" alt="card-img">
+          </div>
+        </li>
+        <li class="card">
+          <div class="view front-view">
+            <img src="images/que_icon.svg" alt="icon">
+          </div>
+          <div class="view back-view">
+            <img src="images/img-4.png" alt="card-img">
+          </div>
+        </li>
+      </ul>
+    </div>
+
+
+    <script>
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const playerName = localStorage.getItem('playerName') || 'Guest';
+            const playerNameDisplay = document.getElementById('playerNameDisplay');
+
+
+            if (playerNameDisplay) {
+                playerNameDisplay.textContent += playerName; // Append the player's name
+            }
+
+
+            const game = {
+                cards: document.querySelectorAll(".card"),
+                matched: 0,
+                score: 0,
+                time: 0,
+                timeInterval: null,
+                cardOne: null,
+                cardTwo: null,
+                disableDeck: false,
+                timerStarted: false, // Add this line to track if the timer has started
+
+                updateScoreDisplay() {
+                    document.getElementById('score').textContent = this.score;
+                },
+
+                restartGame() {
+                    // Confirm with the player before restarting the game
+                    if (confirm("Are you sure you want to restart the game?")) {
+                        this.resetGame(); // Assuming resetGame resets everything needed
+                        // Any additional restart-specific logic can go here
+                        console.log("Game restarted."); // Example of additional logic
+                    }
+                },
+                startTimer() {
+                    this.time = 0; // Reset the time
+                    clearInterval(this.timeInterval); // Clear any existing timer
+                    this.timeInterval = setInterval(() => {
+                        this.time++;
+                        this.displayTime();
+                    }, 1000); // Update time every second
+                },
+                displayTime() {
+                    const minutes = Math.floor(this.time / 60);
+                    const seconds = this.time % 60;
+                    document.getElementById('timer').textContent = `${this.pad(minutes)}:${this.pad(seconds)}`;
+                },
+                pad(value) {
+                    return value.toString().padStart(2, '0'); // Adds leading zeros if needed
+                },
+                resetGame() {
+                    this.matched = 0;
+                    this.score = 0;
+                    this.time = 0;
+                    clearInterval(this.timeInterval); // Stop the timer
+                    this.updateScoreDisplay();
+                    this.displayTime(); // Reset the timer display
+                    this.shuffleCards();
+                    //this.startTimer(); // Restart the timer
+                },
+                shuffleCards() {
+                    let arr = [1, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3, 4, 5, 6, 7, 8];
+                    arr.sort(() => Math.random() - 0.5);
+                    this.cards.forEach((card, i) => {
+                        card.classList.remove("flip");
+                        let imgTag = card.querySelector(".back-view img");
+                        imgTag.src = `images/img-${arr[i]}.png`;
+                    });
+                    this.cardOne = this.cardTwo = null;
+                    this.disableDeck = false;
+                },
+                flipCard(clickedCard) {
+                    if (this.cardOne !== clickedCard && !this.disableDeck) {
+                        if (!this.timerStarted) {
+                            this.startTimer();
+                            this.timerStarted = true; // Ensure the timer starts only once
+                        }
+                        clickedCard.classList.add("flip");
+                        if (!this.cardOne) {
+                            this.cardOne = clickedCard;
+                        } else {
+                            this.cardTwo = clickedCard;
+                            this.disableDeck = true;
+                            this.checkForMatch();
+                        }
+                    }
+                },
+                checkForMatch() {
+                    let cardOneImg = this.cardOne.querySelector(".back-view img").src;
+                    let cardTwoImg = this.cardTwo.querySelector(".back-view img").src;
+                    if (cardOneImg === cardTwoImg) {
+                        this.matchFound();
+                    } else {
+                        this.noMatch();
+                    }
+                },
+                matchFound() {
+                    this.matched++;
+                    this.score += 10;
+                    this.updateScoreDisplay();
+                    if (this.matched === 8) { // Assuming 8 matches means the game is complete
+                        clearInterval(this.timeInterval); // Stop the timer
+                        const finalTime = this.time; // Capture the final time
+                        setTimeout(() => {
+                            this.resetGame();
+                        }, 1000);
+                    }
+
+                    this.cardOne.removeEventListener("click", this.flipCard);
+                    this.cardTwo.removeEventListener("click", this.flipCard);
+                    this.resetCards();
+                },
+                noMatch() {
+                    setTimeout(() => {
+                        this.cardOne.classList.add("shake");
+                        this.cardTwo.classList.add("shake");
+                    }, 400);
+                    setTimeout(() => {
+                        this.cardOne.classList.remove("shake", "flip");
+                        this.cardTwo.classList.remove("shake", "flip");
+                        this.resetCards();
+                    }, 1200);
+                },
+                resetCards() {
+                    this.cardOne = this.cardTwo = null;
+                    this.disableDeck = false;
+                },
+
+                init() {
+                    this.shuffleCards();
+                    document.querySelector('.cards').addEventListener('click', e => {
+                        if (e.target.closest('.card') && !this.disableDeck) {
+                            this.flipCard(e.target.closest('.card'));
+                        }
+                    });
+                }
+            };
+
+            game.init();
+
+            // Attach the event listener to the restart button
+            document.getElementById('restartButton').addEventListener('click', function() {
+                game.restartGame();
+            });
+
+            document.getElementById('leaderboardButton').addEventListener('click', displayLeaderboard);
+
+            // Close the leaderboard and show the game again
+            document.getElementById('closeLeaderboard').addEventListener('click', () => {
+                leaderboardSection.classList.add('hidden');
+                gameWrapper.classList.remove('hidden');
+            });
+
+
+        });
+
+    </script>
+
+  </body>
+</html>
