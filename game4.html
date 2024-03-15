@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">  
+    <title>Speed Typer</title>
+      <style>
+          /* Import Google Font - Poppins */
+          @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+          *{
+              margin: 0;
+              padding: 0;
+              box-sizing: border-box;
+              font-family: 'Poppins', sans-serif;
+          }
+          body{
+              display: flex;
+              padding: 0 10px;
+              align-items: center;
+              justify-content: center;
+              min-height: 100vh;
+              background: #17A2B8;
+          }
+          ::selection{
+              color: #fff;
+              background: #17A2B8;
+          }
+          .wrapper{
+              width: 770px;
+              padding: 35px;
+              background: #fff;
+              border-radius: 10px;
+              box-shadow: 0 10px 15px rgba(0,0,0,0.05);
+          }
+          .wrapper .input-field{
+              opacity: 0;
+              z-index: -999;
+              position: absolute;
+          }
+          .wrapper .content-box{
+              padding: 13px 20px 0;
+              border-radius: 10px;
+              border: 1px solid #bfbfbf;
+          }
+          .content-box .typing-text{
+              overflow: hidden;
+              max-height: 256px;
+          }
+          .typing-text::-webkit-scrollbar{
+              width: 0;
+          }
+          .typing-text p{
+              font-size: 21px;
+              text-align: justify;
+              letter-spacing: 1px;
+              word-break: break-all;
+          }
+          .typing-text p span{
+              position: relative;
+          }
+          .typing-text p span.correct{
+              color: #56964f;
+          }
+          .typing-text p span.incorrect{
+              color: #cb3439;
+              outline: 1px solid #fff;
+              background: #ffc0cb;
+              border-radius: 4px;
+          }
+          .typing-text p span.active{
+              color: #17A2B8;
+          }
+          .typing-text p span.active::before{
+              position: absolute;
+              content: "";
+              height: 2px;
+              width: 100%;
+              bottom: 0;
+              left: 0;
+              opacity: 0;
+              border-radius: 5px;
+              background: #17A2B8;
+              animation: blink 1s ease-in-out infinite;
+          }
+          @keyframes blink{
+              50%{
+                  opacity: 1;
+              }
+          }
+          .content-box .content{
+              margin-top: 17px;
+              display: flex;
+              padding: 12px 0;
+              flex-wrap: wrap;
+              align-items: center;
+              justify-content: space-between;
+              border-top: 1px solid #bfbfbf;
+          }
+          .content button{
+              outline: none;
+              border: none;
+              width: 105px;
+              color: #fff;
+              padding: 8px 0;
+              font-size: 16px;
+              cursor: pointer;
+              border-radius: 5px;
+              background: #17A2B8;
+              transition: transform 0.3s ease;
+          }
+          .content button:active{
+              transform: scale(0.97);
+          }
+          .content .result-details{
+              display: flex;
+              flex-wrap: wrap;
+              align-items: center;
+              width: calc(100% - 140px);
+              justify-content: space-between;
+          }
+          .result-details li{
+              display: flex;
+              height: 20px;
+              list-style: none;
+              position: relative;
+              align-items: center;
+          }
+          .result-details li:not(:first-child){
+              padding-left: 22px;
+              border-left: 1px solid #bfbfbf;
+          }
+          .result-details li p{
+              font-size: 19px;
+          }
+          .result-details li span{
+              display: block;
+              font-size: 20px;
+              margin-left: 10px;
+          }
+          li span b{
+              font-weight: 500;
+          }
+          li:not(:first-child) span{
+              font-weight: 500;
+          }
+          @media (max-width: 745px) {
+              .wrapper{
+                  padding: 20px;
+              }
+              .content-box .content{
+                  padding: 20px 0;
+              }
+              .content-box .typing-text{
+                  max-height: 100%;
+              }
+              .typing-text p{
+                  font-size: 19px;
+                  text-align: left;
+              }
+              .content button{
+                  width: 100%;
+                  font-size: 15px;
+                  padding: 10px 0;
+                  margin-top: 20px;
+              }
+              .content .result-details{
+                  width: 100%;
+              }
+              .result-details li:not(:first-child){
+                  border-left: 0;
+                  padding: 0;
+              }
+              .result-details li p,
+              .result-details li span{
+                  font-size: 17px;
+              }
+          }
+          @media (max-width: 518px) {
+              .wrapper .content-box{
+                  padding: 10px 15px 0;
+              }
+              .typing-text p{
+                  font-size: 18px;
+              }
+              .result-details li{
+                  margin-bottom: 10px;
+              }
+              .content button{
+                  margin-top: 10px;
+              }
+          }
+          /* The Modal (background) */
+          .modal {
+              display: none; /* Hidden by default */
+              position: fixed; /* Stay in place */
+              z-index: 2; /* Sit on top */
+              left: 0;
+              top: 0;
+              width: 100%; /* Full width */
+              height: 100%; /* Full height */
+              overflow: auto; /* Enable scroll if needed */
+              background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+          }
+
+          /* Modal Content/Box */
+          .modal-content {
+              background-color: #fff;
+              margin: 10% auto; /* 10% from the top and centered */
+              padding: 20px;
+              border-radius: 10px;
+              width: 30%; /* Adjust as needed for size */
+              box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+          }
+
+          /* The Close Button */
+          .close {
+              color: #aaaaaa;
+              float: right;
+              font-size: 28px;
+              font-weight: bold;
+          }
+
+          .close:hover,
+          .close:focus {
+              color: #000;
+              text-decoration: none;
+              cursor: pointer;
+          }
+
+          .modal h2 {
+              color: #17A2B8;
+              font-family: 'Poppins', sans-serif;
+              font-size: 24px;
+              margin-bottom: 16px;
+          }
+
+          .modal p {
+              font-family: 'Poppins', sans-serif;
+              font-size: 18px;
+              color: #333;
+          }
+
+          /* Styled to match the Try Again button */
+          #restartGame {
+              background-color: #17A2B8; /* Matching the Try Again button color */
+              color: #fff;
+              padding: 10px 20px;
+              border: none;
+              border-radius: 5px;
+              cursor: pointer;
+              font-size: 16px;
+              font-family: 'Poppins', sans-serif;
+              display: block; /* Centers the button in the modal */
+              margin: 20px auto; /* Adds space above and centers horizontally */
+              width: fit-content; /* Ensures padding affects size */
+          }
+
+          #restartGame:hover {
+              background-color: #1395a0; /* Slightly darker shade on hover */
+          }
+
+          /* Positioning the close button to the top left */
+          .close {
+              position: absolute;
+              top: 10px;
+              right: 15px; /* Adjust as necessary */
+              color: #000000;
+              font-size: 28px;
+
+          }
+
+          /* Style the exit button similar to the close sign but as a button at the bottom */
+          .exit-button {
+              background-color: #17A2B8; /* Matching the Try Again button color */
+              color: #fff;
+              padding: 10px 20px;
+              border: none;
+              border-radius: 5px;
+              cursor: pointer;
+              font-size: 16px;
+              font-family: 'Poppins', sans-serif;
+              display: block; /* Centers the button in the modal */
+              margin: 20px auto; /* Adds space above and centers horizontally */
+              width: fit-content; /* Ensures padding affects size */
+          }
+
+          .exit-button:hover {
+              background-color: #1395a0; /* Slightly darker shade on hover */
+          }
+
+
+      </style>
+  </head>
+  <body>
+
+    <div class="wrapper">
+
+      <input type="text" class="input-field">
+        <span class="close">&times;</span>
+      <div class="content-box">
+        <div class="typing-text">
+          <p></p>
+        </div>
+        <div class="content">
+
+          <ul class="result-details">
+            <li class="time">
+              <p>Time Left:</p>
+              <span><b>60</b>s</span>
+            </li>
+            <li class="mistake">
+              <p>Mistakes:</p>
+              <span>0</span>
+            </li>
+            <li class="wpm">
+              <p>WPM:</p>
+              <span>0</span>
+            </li>
+            <li class="cpm">
+              <p>CPM:</p>
+              <span>0</span>
+            </li>
+          </ul>
+          <button>Try Again</button>
+
+        </div>
+      </div>
+    </div>
+
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <h2>Game Over!</h2>
+            <p id="finalWPM">Words Per Minutes : 0</p>
+            <p id="finalMistakes">Mistakes: 0</p>
+            <p id="finalCPM">Correct Per Mintutes: 0</p>
+            <button id="restartGame">Restart Game</button>
+            <button id="exitGame" class="exit-button">Exit</button>
+        </div>
+    </div>
+
+    <script>
+
+        const Medium_paragraphs = [
+            "Authors often misinterpret the lettuce as a folklore rabbi, when in actuality it feels more like an uncursed bacon. Pursued distances show us how mother-in-laws can be charleses. Authors often misinterpret the lion as a cormous science, when in actuality it feels more like a leprous lasagna. Recent controversy aside, their band was, in this moment, a racemed suit. The clutch of a joke becomes a togaed chair. The first pickled chess is.",
+            "In modern times the first scrawny kitten is, in its own way, an input. An ostrich is the beginner of a roast. An appressed exhaust is a gun of the mind. A recorder is a grade from the right perspective. A hygienic is the cowbell of a skin. Few can name a dun brazil that isn't a highbrow playroom. The unwished beast comes from a thorny oxygen. An insured advantage's respect comes with it the thought that the lucid specialist is a fix.",
+            "In ancient times the legs could be said to resemble stroppy vegetables. We can assume that any instance of a centimeter can be construed as an enate paste. One cannot separate pairs from astute managers. Those americas are nothing more than fish. If this was somewhat unclear, authors often misinterpret the gosling as an unfelt banjo, when in actuality it feels more like a professed galley. A bow of the squirrel is assumed.",
+            "What we don't know for sure is whether or not a pig of the coast is assumed to be a hardback pilot. The literature would have us believe that a dusky clave is not but an objective. Few can name a limbate leo that isn't a sunlit silver. The bow is a mitten. However, the drawer is a bay. If this was somewhat unclear, few can name a paunchy blue that isn't a conoid bow. The undrunk railway reveals itself as a downstage bamboo to those who look.",
+            "Their politician was, in this moment, a notour paperback. The first armless grouse is, in its own way, a gear. The coat is a wash. However, a cake is the llama of a caravan. Snakelike armies show us how playgrounds can be viscoses. Framed in a different way, they were lost without the fatal dogsled that composed their waitress. Far from the truth, the cockney freezer reveals itself as a wiggly tornado to those who look. The first hawklike sack.",
+            "An aunt is a bassoon from the right perspective. As far as we can estimate, some posit the melic myanmar to be less than kutcha. One cannot separate foods from blowzy bows. The scampish closet reveals itself as a sclerous llama to those who look. A hip is the skirt of a peak. Some hempy laundries are thought of simply as orchids. A gum is a trumpet from the right perspective. A freebie flight is a wrench of the mind. Some posit the croupy.",
+            "A baby is a shingle from the right perspective. Before defenses, collars were only operations. Bails are gleesome relatives. An alloy is a streetcar's debt. A fighter of the scarecrow is assumed to be a leisured laundry. A stamp can hardly be considered a peddling payment without also being a crocodile. A skill is a meteorology's fan. Their scent was, in this moment, a hidden feeling. The competitor of a bacon becomes a boxlike cougar.",
+            "A broadband jam is a network of the mind. One cannot separate chickens from glowing periods. A production is a faucet from the right perspective. The lines could be said to resemble zincoid females. A deborah is a tractor's whale. Cod are elite japans. Some posit the wiglike norwegian to be less than plashy. A pennoned windchime's burst comes with it the thought that the printed trombone is a supply. Relations are restless tests.",
+            "In recent years, some teeming herons are thought of simply as numbers. Nowhere is it disputed that an unlaid fur is a marble of the mind. Far from the truth, few can name a glossy lier that isn't an ingrate bone. The chicken is a giraffe. They were lost without the abscessed leek that composed their fowl. An interviewer is a tussal bomb. Vanward maracas show us how scarfs can be doubts. Few can name an unguled punch that isn't pig.",
+            "A cough is a talk from the right perspective. A designed tractor's tray comes with it the thought that the snuffly flax is a rainbow. Their health was, in this moment, an earthy passbook. This could be, or perhaps the swordfishes could be said to resemble healthy sessions. A capricorn is a helium from the right perspective. However, a sled is a mailman's tennis. The competitor of an alarm becomes a toeless raincoat. Their twist was, in this moment.",
+            "Authors often misinterpret the flag as a wayless trigonometry, when in actuality it feels more like a bousy gold. Few can name a jasp oven that isn't a stutter grape. They were lost without the huffy religion that composed their booklet. Those waves are nothing more than pedestrians. Few can name a quartered semicolon that isn't a rounding scooter. Though we assume the latter, the literature would have us believe.",
+            "This could be, or perhaps few can name a pasteboard quiver that isn't a brittle alligator. A swordfish is a death's numeric. Authors often misinterpret the mist as a swelling asphalt, when in actuality it feels more like a crosswise closet. Some posit the tonal brother-in-law to be less than newborn. We know that the sizes could be said to resemble sleepwalk cycles. Before seasons, supplies were only fighters. Their stew was, in this moment.",
+            "The vision of an attempt becomes a lawny output. Dibbles are mis womens. The olden penalty reveals itself as a bustled field to those who look. Few can name a chalky force that isn't a primate literature. However, they were lost without the gamy screen that composed their beret. Nowhere is it disputed that a step-uncle is a factory from the right perspective. One cannot separate paints from dreary windows. What we don't know for sure is whether.",
+            "A tramp is a siamese from the right perspective. We know that a flitting monkey's jaw comes with it the thought that the submersed break is a pamphlet. Their cream was, in this moment, a seedy daffodil. The nest is a visitor. Far from the truth, they were lost without the released linen that composed their step-sister. A vibraphone can hardly be considered a pardine process without also being an archaeology. The bay of a hyacinth becomes.",
+            "The frosts could be said to resemble backstage chards. One cannot separate colleges from pinkish bacons. Far from the truth, the mom of a rooster becomes a chordal hydrogen. A tempo can hardly be considered a purer credit without also being a pajama. The first combined ease is, in its own way, a pantyhose. Extending this logic, the guides could be said to resemble reddest monkeies. Framed in a different way, an addle hemp is a van.",
+            "Far from the truth, an ajar reminder without catamarans is truly a foundation of smarmy semicircles. An alike board without harps is truly a satin of fated pans. A hubcap sees a parent as a painful beautician. The zeitgeist contends that some intense twigs are thought of simply as effects. A cross is a poppied tune. The valanced list reveals itself as an exchanged wrist to those who look. Recent controversy aside.",
+            "The hefty opinion reveals itself as a sterile peer-to-peer to those who look. This could be, or perhaps the watch of a diamond becomes a bosom baboon. In recent years, some posit the unstuffed road to be less than altern. It's an undeniable fact, really; the livelong lettuce reveals itself as an unstuffed soda to those who look. In ancient times a bit is a balance's season. The popcorn of a morning becomes a moonless beauty.",
+            "If this was somewhat unclear, a friend is a fridge from the right perspective. An upset carriage is a stitch of the mind. To be more specific, a temper is a pair from the right perspective. Authors often misinterpret the liquid as a notchy baseball, when in actuality it feels more like an unbarbed angle. Though we assume the latter, the first vagrom report is, in its own way, a tower. We know that the octopus of a cd becomes an unrent dahlia.",
+            "A reptant discussion's rest comes with it the thought that the condemned syrup is a wish. The drake of a wallaby becomes a sonant harp. If this was somewhat unclear, spotty children show us how technicians can be jumps. Their honey was, in this moment, an intime direction. A ship is the lion of a hate. They were lost without the croupous jeep that composed their lily. In modern times a butcher of the birth is assumed to be a spiral bean.",
+            "Those cowbells are nothing more than elements. This could be, or perhaps before stockings, thoughts were only opinions. A coil of the exclamation is assumed to be a hurtless toy. A board is the cast of a religion. In ancient times the first stinko sailboat is, in its own way, an exchange. Few can name a tutti channel that isn't a footless operation. Extending this logic, an oatmeal is the rooster of a shake. Those step-sons are nothing more than matches."
+        ];
+
+
+        const Easy_paragraphs = [
+            "In the heart of the bustling city, amidst the cacophony of sounds, there lies a quaint little park. A hidden gem, it offers solace to those seeking a moment of tranquility in their fast-paced lives.",
+            "The old library stood as a testament to the thirst for knowledge. Its ancient books, covered in dust, held secrets of the past, whispering tales of wisdom and adventure to those who dared to listen.",
+            "Under the canopy of the starlit sky, the campfire crackled, casting shadows on the faces gathered around it. Stories of old and new were shared, creating memories that would last a lifetime.",
+            "The sun dipped below the horizon, painting the sky in hues of orange and pink. It was a moment of unspeakable beauty, a daily masterpiece that reminded everyone of nature's simple yet profound artistry.",
+            "In the depths of the forest, where sunlight barely touched the ground, the ancient tree stood. Its roots, deep and sprawling, were the keepers of the earth's secrets, a silent witness to the passage of time.",
+            "The gentle hum of the city at night was a symphony of its own. Streetlights flickered like stars, guiding the way for the nocturnal souls who found solace in the quietude that only night could offer.",
+            "As the storm raged on, the power of nature was undeniable. Lightning illuminated the sky, followed by the roar of thunder, a reminder of the earth's raw beauty and formidable strength.",
+            "The painter's brush danced across the canvas, bringing to life visions of dreams and reality intertwined. Each stroke was a testament to the artist's journey, a path paved with colors and emotions.",
+            "Amidst the chaos of the world, the garden remained a sanctuary. Flowers bloomed in defiance, their colors a bold statement against the grey of uncertainty, offering hope and beauty in abundance.",
+            "The old clock tower, standing tall against the test of time, chimed the hour. Its sound, a familiar comfort, echoed through the streets, marking the passage of time in an ever-changing world.",
+            "In the silence of the early morning, the city awoke gently. Streets slowly filled with the rhythms of daily life, a reminder of the persistent cycle of dawn to dusk.",
+            "The mountaintop, touched by the first light of dawn, offered a view that captured the essence of freedom. The world below, vast and unbound, was a canvas of possibilities.",
+            "The bookshop, with its creaky floorboards and the scent of old paper, was a haven for those who sought adventure within pages. It was a place where stories lived, waiting to be discovered.",
+            "The kitchen was alive with the aroma of spices and the warmth of the oven. It was a place of creation, where recipes were passed down like precious heirlooms, and meals were more than just food.",
+            "The old guitar, with its worn strings, held the melody of countless songs. It was an instrument of expression, connecting the past with the present through the universal language of music.",
+            "As the waves crashed against the shore, they told tales of distant lands. The sea, vast and mysterious, was a reminder of the world's endless wonders and the adventure that lay beyond the horizon.",
+            "The night market buzzed with energy, a kaleidoscope of colors, sounds, and smells. It was a place where cultures intertwined, offering a taste of the world through its myriad of stalls and flavors.",
+            "In the stillness of the forest, the deer moved with grace, a vision of peace in the wild. Their presence was a gentle reminder of the world's beauty, often overlooked in the rush of life.",
+            "The old typewriter, with each click and clack, was a bridge to the past. It was a tool of creation, where thoughts became tangible, and stories came to life on the ribbon of ink.",
+            "The moonlit garden was a scene from a dream, where flowers glowed softly under the night sky. It was a place of magic, where the boundary between reality and fantasy blurred, inviting the imagination to wander."
+        ];
+
+        const Hard_paragraphs = [
+            "The sun dipped below the horizon, casting a golden hue across the sky. In the tranquil village nestled among rolling hills, the day's fervor slowly surrendered to the cool embrace of night. Streets once bustling with the day's chores and laughter quieted, as families gathered around hearth fires. The aroma of freshly baked bread mingled with the night air, creating an inviting atmosphere of warmth and comfort. In this moment, the village wasn't just a place on a map, but a testament to the simple, enduring joys of community life.",
+            "In the heart of an ancient forest, where light filters through the canopy in ethereal beams, there lies a hidden glen. It's said that this place holds a magic old as time, where faeries dance under the moonlight and trees whisper secrets of the earth. Moss carpets the ground, soft underfoot, leading the curious and the brave to a clearing where reality seems to bend, inviting wonder and awe. Here, amidst the ageless trees, one can't help but feel a connection to the natural world that is both profound and ineffable.",
+            "The vast expanse of the cosmos stretches out, an endless tapestry of twinkling stars and swirling galaxies. From the vantage point of a solitary spacecraft, Earth appears as a delicate blue marble, a reminder of the fragility and uniqueness of our home. Astronauts aboard observe this spectacle, a mix of awe and contemplation filling their hearts. They are explorers in the truest sense, pushing the boundaries of human knowledge and experience, tethered to the rest of humanity by the slenderest of lifelines and the shared dream of reaching beyond our grasp.",
+            "The market was a cacophony of sights, sounds, and smells. Vendors hawked their wares with boisterous calls, while buyers haggled with practiced ease. Stalls overflowed with vibrant fruits and vegetables, fresh fish glistening under the morning sun, and spices that filled the air with their potent aromas. It was a place of connection, where the produce of the countryside met the hustle and bustle of city life. Amidst this lively exchange, stories unfolded—of hard-won harvests, family recipes passed down through generations, and the simple pleasure of a meal shared with loved ones.",
+            "The library was a sanctuary of silence and knowledge. Rows upon rows of books stood as guardians of wisdom, their spines a mosaic of colors and titles. In this hallowed space, time seemed to stand still, allowing seekers to wander through worlds crafted from words. The faint rustle of pages turning was the only sound that disturbed the quiet, a testament to the thirst for understanding that drove each visitor. Here, amidst the tomes of history, fiction, and philosophy, one could find solace in the company of great minds and the endless pursuit of learning.",
+            "On a distant mountaintop, where the air is thin and the sky an endless blue, a lone climber reaches the summit. With each labored breath, they stand at the edge of the world, looking out over a sea of clouds. This moment is the culmination of years of dreams, of challenges faced and overcome. The mountain, with its sheer cliffs and whispering winds, is both adversary and companion. Here, amidst the stark beauty of nature, the climber finds a profound sense of accomplishment and a quietude that speaks to the soul.",
+            "The artist's studio is a realm of controlled chaos, where creativity takes physical form amidst splashes of paint and strewn brushes. Canvases line the walls, each a window into the artist's imagination. In this sanctuary, the mundane gives way to the extraordinary, as everyday sights and feelings are transformed into vibrant expressions of color and form. The artist, a conduit of emotion and vision, works with fervent focus, each stroke a deliberate choice in the dance of creation. This space, cluttered yet sacred, is where beauty is born from the tumult of inspiration.",
+            "A bustling city street at night pulses with life, its rhythm set by the flow of people and the neon glow of signs. Laughter spills from open doorways, mixing with the melodies of street musicians and the distant honk of traffic. This urban symphony is a testament to the city's vibrant heart, a place where stories intersect and destinies intertwine. The energy is palpable, a force that draws people in, seeking connection, adventure, or simply the thrill of the unknown. In the city's embrace, every moment holds the potential for something extraordinary.",
+            "The old library book, its cover worn from countless hands and its pages yellowed with age, holds within its bindings a treasure trove of stories. Each word, each sentence, is a portal to another time and place, inviting the reader on a journey of imagination. The musty scent of paper is a promise of discovery, a whisper from the past that stories endure, transcending time and space. In this quiet companionship, the reader and the book share a bond, a silent dialogue that nurtures the soul and ignites the mind.",
+            "The garden at dawn is a world reborn, bathed in the gentle light of a new day. Dewdrops adorn each leaf and petal, sparkling jewels in the soft morning sun. Birds sing praises to the sky, their melodies a celebration of life's simple beauty. This peaceful haven, a labor of love and patience, is a reminder of nature's cycles, of growth and renewal. As the gardener walks the paths, tending to the earth with a gentle hand, they are part of something greater—a dance of light, life, and the enduring rhythm of the natural world.",
+            "The ancient oak tree stands as a silent witness to the passage of time, its gnarled roots deeply entwined with the earth. Around it, the forest breathes—a living entity, echoing with the whispers of life. To sit beneath its branches is to be enveloped in a sense of continuity, a connection to the cycles of life that predominate this green sanctuary. Here, one finds solace in the tree's steadfast presence, a reminder that, despite the transient nature of existence, there is beauty in endurance and strength in resilience.",
+            "The midnight train slices through the darkness, a beacon of light in the vast expanse of night. Inside, passengers sit in contemplation, their faces illuminated by the soft glow of the carriage lights. Each is a traveler on a journey not just of distance, but of thought. The rhythmic clack of the rails is a lullaby of motion, encouraging dreams of what lies ahead and reflections on the paths left behind. In this transient space, time seems suspended, offering a rare pause for introspection amidst the relentless pace of life.",
+            "The chef's kitchen is a symphony of senses, where ingredients come together in a dance of flavors and aromas. The sizzle of the pan, the chop of the knife, and the blend of spices create a melody of culinary creation. Here, the chef is both artist and scientist, understanding the chemistry of taste while intuitively knowing how to stir the soul with food. Each dish is a story of culture, of personal journey, and of the earth's bounty, served with the hope of invoking shared moments and cherished memories.",
+            "The writer's desk, cluttered with notes and manuscripts, is a testament to the labor of creation. Words are woven into narratives, characters come to life, and worlds are built from imagination. This space, though quiet, is alive with the tumult of creative endeavor. The writer, a custodian of stories, wrestles with the weight of untold tales and the thrill of exploration. In the solitude of this craft, there is a communion with the reader, a future connection forged in the intimacy of thought and expression.",
+            "The old clockmaker's workshop is a realm where time is both master and servant. Cogs and gears, springs and pendulums, lie in organized disarray, each piece a component of the grand puzzle of timekeeping. The clockmaker, with skilled hands and an eye for precision, breathes life into mechanisms that measure the passing moments. In this space, where the tick and tock of clocks fill the air, one is reminded of the relentless march of time and the human endeavor to harness it.",
+            "The night sky, adorned with stars, is a canvas of cosmic beauty. It invites the gaze of dreamers and thinkers, offering a glimpse into the infinite. This celestial spectacle, with its patterns and mysteries, has guided explorers and inspired poets. Under its vast expanse, one feels the weight of existence and the wonder of the universe. It's a reminder of our place in the grand scheme, a speck in the vastness, yet connected to the whole through the simple act of looking up.",
+            "The quiet street at dawn offers a moment of stillness before the day begins. The cool air carries the promise of a new day, and the first rays of sun paint shadows on the pavement. This is a time for reflection, for the world seems to hold its breath in anticipation. The solitary walker finds peace in this calm, a brief respite from the noise of life, a chance to savor the simplicity of existence before the rush commences.",
+            "The potter's wheel turns, a circle of creation where clay is shaped by hands and will. This dance of form and function is a meditation on the tangible, a dialogue between maker and material. The potter, centered in the moment, guides the clay's transformation with patience and intuition. The finished piece, whether vase or bowl, carries within it the essence of this exchange, a physical manifestation of thought, care, and the human touch.",
+            "The storm, with its fury and majesty, is a reminder of nature's power. Lightning illuminates the sky, a fleeting glimpse into the heart of the tempest, while thunder rolls like the earth's heartbeat. In its wake, the world is washed clean, the air crisp and charged with potential. It's a spectacle that humbles and exhilarates, evoking a primal awe at the forces that shape our planet and our lives.",
+            "In the early hours of a spring morning, the garden awakens with a symphony of colors and sounds. Dewdrops glisten on the petals of blooming flowers, reflecting the first light of dawn with sparkling clarity. Birds chirp melodiously, announcing the start of a new day, as a gentle breeze rustles through the leaves. The air is filled with the fresh, earthy scent of moist soil, mingling with the sweet fragrance of blossoms. This moment of natural harmony offers a peaceful retreat from the bustling world, reminding us of the simple beauty that surrounds us daily.",
+        ];
+
+
+        const typingText = document.querySelector(".typing-text p"),
+            inpField = document.querySelector(".wrapper .input-field"),
+            tryAgainBtn = document.querySelector(".content button"),
+            timeTag = document.querySelector(".time span b"),
+            mistakeTag = document.querySelector(".mistake span"),
+            wpmTag = document.querySelector(".wpm span"),
+            cpmTag = document.querySelector(".cpm span");
+
+        let timer,
+            maxTime = 60,
+            timeLeft = maxTime,
+            charIndex = mistakes = isTyping = 0;
+
+        function getDifficultyFromURL() {
+            const queryParams = new URLSearchParams(window.location.search);
+            return queryParams.get('difficulty'); // This will be 'easy', 'medium', or 'hard'
+        }
+
+
+        function loadParagraph() {
+            const difficulty = getDifficultyFromURL(); // Get the difficulty from the URL
+            let paragraphs;
+
+            // Decide which paragraphs to use based on the difficulty level
+            switch (difficulty) {
+                case 'easy':
+                    paragraphs = Easy_paragraphs;
+                    break;
+                case 'medium':
+                    paragraphs = Medium_paragraphs;
+                    break;
+                case 'hard':
+                    paragraphs = Hard_paragraphs;
+                    break;
+                default:
+                    console.error('Unknown difficulty level:', difficulty);
+                    return; // Exit if difficulty is not recognized
+            }
+
+            // Load a random paragraph from the chosen set
+            const ranIndex = Math.floor(Math.random() * paragraphs.length);
+            typingText.innerHTML = ""; // Ensure this selector matches your HTML structure
+            paragraphs[ranIndex].split("").forEach(char => {
+                let span = `<span>${char}</span>`;
+                typingText.innerHTML += span;
+            });
+            typingText.querySelectorAll("span")[0].classList.add("active");
+        }
+
+
+        // Ensure this is the only call to loadParagraph() in your script, and it's called after the DOM is fully loaded
+        document.addEventListener("DOMContentLoaded", function() {
+            loadParagraph();
+            // Additional initialization code can go here
+        });
+
+        inpField.addEventListener("input", initTyping);
+        tryAgainBtn.addEventListener("click", resetGame);
+
+
+            function initTyping() {
+            let characters = typingText.querySelectorAll("span");
+            let typedChar = inpField.value.split("")[charIndex];
+
+
+
+            if(charIndex < characters.length - 1 && timeLeft > 0) {
+                if(!isTyping) {
+                    timer = setInterval(initTimer, 1000);
+                    isTyping = true;
+                }
+                if(typedChar == null) {
+                    if(charIndex > 0) {
+                        charIndex--;
+                        if(characters[charIndex].classList.contains("incorrect")) {
+                            mistakes--;
+                        }
+                        characters[charIndex].classList.remove("correct", "incorrect");
+                    }
+                } else {
+                    if(characters[charIndex].innerText === typedChar) {
+                        characters[charIndex].classList.add("correct");
+                    } else {
+                        mistakes++;
+                        characters[charIndex].classList.add("incorrect");
+                    }
+                    charIndex++;
+                }
+                characters.forEach(span => span.classList.remove("active"));
+                characters[charIndex].classList.add("active");
+
+                let wpm = Math.round(((charIndex - mistakes)  / 5) / (maxTime - timeLeft) * 60);
+                wpm = wpm < 0 || !wpm || wpm === Infinity ? 0 : wpm;
+
+                wpmTag.innerText = wpm;
+                mistakeTag.innerText = mistakes;
+                cpmTag.innerText = charIndex - mistakes;
+            }
+            else if (charIndex === characters.length - 1) {
+                clearInterval(timer); // Stop the timer
+                displayResults(); // Display the results in a modal
+            }
+            else {
+                clearInterval(timer);
+                inpField.value = "";
+            }
+
+
+        }
+
+        function displayResults() {
+            const modal = document.getElementById("myModal");
+            const span = document.getElementsByClassName("close")[0];
+            const restartBtn = document.getElementById("restartGame");
+
+            document.getElementById("finalWPM").innerText = "WPM: " + wpmTag.innerText;
+            document.getElementById("finalMistakes").innerText = "Mistakes: " + mistakeTag.innerText;
+            document.getElementById("finalCPM").innerText = "CPM: " + cpmTag.innerText;
+
+            modal.style.display = "block";
+
+            span.onclick = function() {
+                modal.style.display = "none";
+            }
+
+            restartBtn.onclick = function() {
+                modal.style.display = "none";
+                resetGame();
+            }
+
+            window.onclick = function(event) {
+                if (event.target === modal) {
+                    modal.style.display = "none";
+                }
+            }
+        }
+
+        function initTimer() {
+            if(timeLeft > 0) {
+                timeLeft--;
+                timeTag.innerText = timeLeft;
+                let wpm = Math.round(((charIndex - mistakes)  / 5) / (maxTime - timeLeft) * 60);
+                wpmTag.innerText = wpm;
+            } else {
+                clearInterval(timer);
+            }
+        }
+
+        function resetGame() {
+            loadParagraph();
+            clearInterval(timer);
+            timeLeft = maxTime;
+            charIndex = mistakes = isTyping = 0;
+            inpField.value = "";
+            timeTag.innerText = timeLeft;
+            wpmTag.innerText = 0;
+            mistakeTag.innerText = 0;
+            cpmTag.innerText = 0;
+        }
+
+        loadParagraph();
+        inpField.addEventListener("input", initTyping);
+        tryAgainBtn.addEventListener("click", resetGame);
+
+
+        document.addEventListener("DOMContentLoaded", function() {
+            loadParagraph();
+            document.addEventListener("keydown", () => inpField.focus()); // Ensure this effectively focuses the input
+        });
+
+        document.querySelector(".close").addEventListener("click", function() {
+            window.location.href = "game5.html";
+        });
+
+        document.getElementById("exitGame").addEventListener("click", function() {
+            window.location.href = "game5.html";
+        });
+
+
+
+
+
+    </script>
+
+  
+  </body>
+</html>
