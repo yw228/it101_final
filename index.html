@@ -61,20 +61,105 @@
             backface-visibility: hidden; /* Hide the back of the card when flipped */
         }
 
-        .front-view {
+        .front-view.card1 {
+            /*background-image: url('images/1.webp');*/
+            background-size: cover; /* Ensures the image covers the entire area without being stretched */
+            background-position: center; /* Centers the image in the card */
             background-color: #fff;
             color: black;
         }
 
-        .back-view {
+
+        .back-view.card1 {
+            /*background-image: url('images/1.webp');*/
+            background-size: cover;
+            background-position: center;
             background-color: #333;
             color: white;
-            transform: rotateY(180deg); /* Rotate the back view by default */
+            transform: rotateY(180deg);
         }
+
+        .front-view.card2 {
+            /*background-image: url('images/1.webp');*/
+            background-size: cover; /* Ensures the image covers the entire area without being stretched */
+            background-position: center; /* Centers the image in the card */
+            background-color: #fff;
+            color: black;
+        }
+
+
+        .back-view.card2 {
+            /*background-image: url('images/1.webp');*/
+            background-size: cover;
+            background-position: center;
+            background-color: #333;
+            color: white;
+            transform: rotateY(180deg);
+        }
+
+
+        .front-view.card3 {
+            /*background-image: url('images/1.webp');*/
+            background-size: cover; /* Ensures the image covers the entire area without being stretched */
+            background-position: center; /* Centers the image in the card */
+            background-color: #fff;
+            color: black;
+        }
+
+
+        .back-view.card3 {
+            /*background-image: url('images/1.webp');*/
+            background-size: cover;
+            background-position: center;
+            background-color: #333;
+            color: white;
+            transform: rotateY(180deg);
+        }
+
+
+        .front-view.card4 {
+            /*background-image: url('images/1.webp');*/
+            background-size: cover; /* Ensures the image covers the entire area without being stretched */
+            background-position: center; /* Centers the image in the card */
+            background-color: #fff;
+            color: black;
+        }
+
+
+        .back-view.card4 {
+            /*background-image: url('images/1.webp');*/
+            background-size: cover;
+            background-position: center;
+            background-color: #333;
+            color: white;
+            transform: rotateY(180deg);
+        }
+
+
+        .front-view.card5 {
+            /*background-image: url('images/1.webp');*/
+            background-size: cover; /* Ensures the image covers the entire area without being stretched */
+            background-position: center; /* Centers the image in the card */
+            background-color: #fff;
+            color: black;
+        }
+
+
+        .back-view.card5 {
+            /*background-image: url('images/1.webp');*/
+            background-size: cover;
+            background-position: center;
+            background-color: #333;
+            color: white;
+            transform: rotateY(180deg);
+        }
+
 
         img {
             max-width: 100%;
-            height: auto;
+            max-height: 100%;
+            height: max-content;
+            width: max-content;
             border-radius: 5px; /* Optional: rounded corners for a softer look */
         }
 
@@ -99,50 +184,50 @@
         <!-- Each card links to a different game -->
         <li class="card">
             <a href="game1_pre.html">
-                <div class="view front-view">
+                <div class="view front-view card1">
                     <img src="images/que_icon.svg" alt="icon">
                 </div>
-                <div class="view back-view">
-                    <img src="images/game1.png" alt="Game 1">
+                <div class="view back-view card1">
+                    <img src="images/1.webp" alt="Memory Card Game">
                 </div>
             </a>
         </li>
         <li class="card">
             <a href="game2.html">
-                <div class="view front-view">
+                <div class="view front-view card2">
                     <img src="images/que_icon.svg" alt="icon">
                 </div>
-                <div class="view back-view">
+                <div class="view back-view card2">
                     <img src="images/game2.png" alt="Game 2">
                 </div>
             </a>
         </li>
         <li class="card">
             <a href="game3.html">
-                <div class="view front-view">
+                <div class="view front-view card3">
                     <img src="images/que_icon.svg" alt="icon">
                 </div>
-                <div class="view back-view">
+                <div class="view back-view card3">
                     <img src="images/game3.png" alt="Game 3">
                 </div>
             </a>
         </li>
         <li class="card">
             <a href="game4_pre.html">
-                <div class="view front-view">
+                <div class="view front-view card4">
                     <img src="images/que_icon.svg" alt="icon">
                 </div>
-                <div class="view back-view">
+                <div class="view back-view card4">
                     <img src="images/game4.png" alt="Game 4">
                 </div>
             </a>
         </li>
         <li class="card">
             <a href="game5.html">
-                <div class="view front-view">
+                <div class="view front-view card5">
                     <img src="images/que_icon.svg" alt="icon">
                 </div>
-                <div class="view back-view">
+                <div class="view back-view card5">
                     <img src="images/game5.png" alt="Game 5">
                 </div>
             </a>
