@@ -48,6 +48,7 @@
     <p>Please enter your name to start playing:</p>
     <input type="text" id="playerName" placeholder="Your Name">
     <button id="startGameButton">Start Game</button>
+    <button id="quitGameButton">Quit</button> <!-- Added Quit Button -->
 </div>
 
 <script>
@@ -62,6 +63,11 @@
         } else {
             alert('Please enter your name.');
         }
+    });
+
+    document.getElementById('quitGameButton').addEventListener('click', function() {
+        // Perform the action you want on quit. For example, redirect to the homepage.
+        window.location.href = 'index.html'; // Change 'index.html' to your desired quit destination.
     });
 </script>
 </body>

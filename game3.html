@@ -177,7 +177,11 @@
 
   </style>
   <body>
+
     <div class="wrapper">
+        <div id="startInstruction" style="color: #B8C6DC; text-align: center; padding: 20px;">
+            Press any arrow key to start the game.
+        </div>
       <div class="game-details">
         <span class="score">Score: 0</span>
         <span class="high-score">Highest Score: 0</span>
@@ -202,6 +206,9 @@
             <button id="exitButton">Exit</button>
         </div>
     </div>
+
+
+
 
   </body>
 <script>
@@ -339,7 +346,7 @@
     document.getElementById('exitButton').addEventListener('click', function() {
         // Redirect to main menu or landing page
         localStorage.removeItem("high-score");
-        window.location.href = 'game5.html'; // Change 'mainMenu.html' to your actual landing page URL
+        window.location.href = 'index.html'; // Change 'mainMenu.html' to your actual landing page URL
     });
 
 </script>
