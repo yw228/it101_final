@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
   <head>
@@ -223,11 +224,12 @@
   </body>
 
   <script>
-      document.addEventListener("DOMContentLoaded", () => {
+
+    document.addEventListener("DOMContentLoaded", () => {
           initializePasswordGenerator();
       });
 
-      function initializePasswordGenerator() {
+    function initializePasswordGenerator() {
           const lengthSlider = document.querySelector(".pass-length input"),
               options = document.querySelectorAll(".option input"),
               copyIcon = document.querySelector(".input-box span"),
@@ -237,20 +239,32 @@
           const generateBtn = document.querySelector(".generate-btn");
           const saveBtn = document.querySelector(".save-btn"); // Added for the save button
 
-          function savePassword() {
-              const password = passwordInput.value;
-              if (password) {
-                  // Create a unique key for each password based on the current timestamp
-                  const key = `password_${new Date().getTime()}`;
-                  console.log(key)
-                  localStorage.setItem(key, password);
-                  alert("Password saved successfully!"); // Feedback to the user
-              } else {
-                  alert("No password to save!"); // Error handling
-              }
+        function savePassword() {
+          const password = passwordInput.value;
+          if (password) {
+            fetch('http://localhost:3000/savePassword', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ password: password }),
+            })
+                    .then(response => response.text())
+                    .then(data => {
+                      alert("Password saved successfully!");
+                    })
+                    .catch((error) => {
+                      console.error('Error:', error);
+                      alert("Error saving password");
+                    });
+          } else {
+            alert("No password to save!");
           }
+        }
 
-          const characters = {
+
+
+        const characters = {
               lowercase: "abcdefghijklmnopqrstuvwxyz",
               uppercase: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
               numbers: "0123456789",
