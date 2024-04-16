@@ -41,11 +41,27 @@
         button:hover {
             background-color: #138496;
         }
+
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #000000;
+            transition: color 0.3s;
+        }
+
+        .close-btn:hover {
+            color: #FF6347;  /* A red tint to signify an actionable item */
+        }
+
     </style>
 </head>
 <body>
 
 <div class="difficulty-selector">
+    <span class="close-btn">&times;</span>
     <h1>SPEED TYPER</h1>
     <h2>Select Difficulty</h2>
     <button onclick="window.location.href='game4.html?difficulty=easy'">Easy</button>
@@ -55,4 +71,13 @@
 
 
 </body>
+
+
+<script>
+    document.querySelector('.close-btn').addEventListener('click', function() {
+        window.location.href = 'index.html'; // Redirects to the index.html page
+    });
+</script>
+
+
 </html>

@@ -25,7 +25,7 @@
             margin-top: 20px;
             border: 1px solid #ccc;
             border-radius: 5px;
-            width: calc(100% - 24px); /* Adjust based on padding and border */
+            width: calc(100% - 24px);
         }
         button {
             padding: 10px 20px;
@@ -40,16 +40,30 @@
         button:hover {
             background-color: #e2e2e2;
         }
+
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #000000;
+            transition: color 0.3s;
+        }
+
+        .close-btn:hover {
+            color: #FF6347;  /* A red tint to signify an actionable item */
+        }
     </style>
 </head>
 <body>
 <div id="nameInputSection">
+    <span class="close-btn">&times;</span>
     <h2>Welcome to the Memory Card Game!</h2>
     <p>Please enter your name to start playing:</p>
     <input type="text" id="playerName" placeholder="Your Name">
     <button id="startGameButton">Start Game</button>
-    <button id="quitGameButton">Quit</button> <!-- Added Quit Button -->
-
+    <button id="quitGameButton">Quit</button> <!-- The Quit button already added -->
 
     <h1>How to Play the Memory Card Game</h1>
     <ol style="text-align: left; padding: 20px; list-style-type: decimal; max-width: 600px; margin: auto;">
@@ -59,27 +73,19 @@
     </ol>
 </div>
 
-
-
-
-
 <script>
     document.getElementById('startGameButton').addEventListener('click', function() {
         const playerName = document.getElementById('playerName').value.trim();
         if (playerName) {
-            // Save the player's name in local storage
             localStorage.setItem('playerName', playerName);
-
-            // Redirect to the game page
             window.location.href = 'game1.html';
         } else {
             alert('Please enter your name.');
         }
     });
 
-    document.getElementById('quitGameButton').addEventListener('click', function() {
-        // Perform the action you want on quit. For example, redirect to the homepage.
-        window.location.href = 'index.html'; // Change 'index.html' to your desired quit destination.
+    document.querySelector('.close-btn').addEventListener('click', function() {
+        window.location.href = 'index.html'; // Redirects to the index.html page
     });
 </script>
 </body>
